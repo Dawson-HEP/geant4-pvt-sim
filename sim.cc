@@ -1,7 +1,6 @@
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-#include "FTFP_BERT.hh" // A standard physics list
-#include "G4StepLimiterPhysics.hh"
+#include "FTFP_BERT.hh"
 #include "construction.hh"
 #include "action.hh"
 #include "G4AnalysisManager.hh"
@@ -9,75 +8,67 @@
 #include "G4UIExecutive.hh"
 
 int main(int argc, char** argv) {
-    // 1. Construct the default run manager
+    // 1. Run Manager
     G4RunManager* runManager = new G4RunManager;
 
-    // 2. Set mandatory initialization classes (We will define these later)
-    // For now, we use a pre-made Physics List
+    // 2. Mandatory Initializations
     runManager->SetUserInitialization(new FTFP_BERT);
-    runManager -> SetUserInitialization(new MyDetectorConstruction());
+    runManager->SetUserInitialization(new MyDetectorConstruction());
     runManager->SetUserInitialization(new MyActionInitialization());
 
-    // 3. Initialize G4 kernel
-    runManager->Initialize(); // Commented out until we have geometry!
+    // 3. Initialize Kernel (Crucial to do this BEFORE Analysis/Vis)
+    runManager->Initialize();
 
-    // Initialize Visualization
-    G4VisManager* visManager = new G4VisExecutive;
+    // 4. Setup Analysis Manager (Do this BEFORE the UI starts)
+    auto analysisManager = G4AnalysisManager::Instance();
+    analysisManager->SetDefaultFileType("csv");
+    analysisManager->SetVerboseLevel(1);
+    
+    // This creates 'output_nt_Data.csv' (Geant4 adds the _nt_ prefix)
+    analysisManager->OpenFile("output.csv");
+    analysisManager->SetNtupleDirectoryName("ntuple");
+
+    // Create Ntuple with all your requested columns
+    analysisManager->CreateNtuple("Data", "Step Data");
+    analysisManager->CreateNtupleIColumn("EventID");    // Col 0
+    analysisManager->CreateNtupleIColumn("TrackID");    // Col 1
+    analysisManager->CreateNtupleIColumn("Step");       // Col 2
+    analysisManager->CreateNtupleDColumn("X");          // Col 3
+    analysisManager->CreateNtupleDColumn("Y");          // Col 4
+    analysisManager->CreateNtupleDColumn("Z");          // Col 5
+    analysisManager->CreateNtupleDColumn("KinE");       // Col 6
+    analysisManager->CreateNtupleDColumn("dE");         // Col 7
+    analysisManager->CreateNtupleDColumn("StepLeng");   // Col 8
+    analysisManager->CreateNtupleDColumn("TrackLeng");  // Col 9
+    analysisManager->CreateNtupleSColumn("NextVolume"); // Col 10
+    analysisManager->CreateNtupleSColumn("ProcName");   // Col 11
+    analysisManager->FinishNtuple();
+
+    // 5. Visualization & UI
+    G4VisManager* visManager = new G4VisExecutive("Quiet"); // Quiet mode reduces terminal spam
     visManager->Initialize();
 
-    // Handle UI (For Docker, we usually run in batch mode or Web mode)
-    G4UIExecutive* ui = nullptr;
-    if (argc == 1) {
-        ui = new G4UIExecutive(argc, argv);
-    }
-
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    G4UIExecutive* ui = nullptr;
 
-    if (ui) {
-        // This runs if you just type ./sim
-        UImanager->ApplyCommand("/control/execute vis.mac");
+    if (argc == 1) {
+        // Start Interactive Mode
+        ui = new G4UIExecutive(argc, argv);
+        UImanager->ApplyCommand("/control/execute ../vis.mac");
         ui->SessionStart();
         delete ui;
     } else {
-        // This runs if you type ./sim run.mac
+        // Batch Mode (e.g., ./sim run.mac)
         G4String command = "/control/execute ";
-        G4String fileName = argv[1];
-        UImanager->ApplyCommand(command + fileName);
+        UImanager->ApplyCommand(command + argv[1]);
     }
 
-    delete visManager;
-
-    // Increase verbosity to see the details of each step the particle takes
-    UImanager->ApplyCommand("/tracking/verbose 1");
-
-    // Set up analysis manager for output
-    auto analysisManager = G4AnalysisManager::Instance();
-    analysisManager->SetDefaultFileType("csv"); // Save as CSV
-    analysisManager->OpenFile("output.csv");
-
-    // Create a table (Ntuple) with two columns: Z and Energy
-    analysisManager->CreateNtuple("Data", "Step Data");
-    analysisManager->CreateNtupleIColumn("EventID");
-    analysisManager->CreateNtupleIColumn("TrackID");
-    analysisManager->CreateNtupleIColumn("Step");      // Integer for Step#
-    analysisManager->CreateNtupleDColumn("X");          // Double for X
-    analysisManager->CreateNtupleDColumn("Y");
-    analysisManager->CreateNtupleDColumn("Z");
-    analysisManager->CreateNtupleDColumn("KinE");
-    analysisManager->CreateNtupleDColumn("dE");        // Energy deposited in this step
-    analysisManager->CreateNtupleDColumn("StepLeng");
-    analysisManager->CreateNtupleDColumn("TrackLeng");
-    analysisManager->CreateNtupleSColumn("NextVolume"); // String for Volume name
-    analysisManager->CreateNtupleSColumn("ProcName");   // String for Process name
-    analysisManager->FinishNtuple();
-
-    // 4. Start a run (shoot 10 particles)
-    runManager->BeamOn(1000);
-
-    // 5. Save and close the analysis file
+    // 6. Finalize Data
+    // This writes the buffer to the CSV file
     analysisManager->Write();
     analysisManager->CloseFile();
 
+    delete visManager;
     delete runManager;
-    return 0; // Exit successfully
+    return 0;
 }

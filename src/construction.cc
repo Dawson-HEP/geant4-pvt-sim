@@ -4,6 +4,8 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4VisAttributes.hh"
+#include "G4Color.hh"
 
 MyDetectorConstruction::MyDetectorConstruction() {}
 MyDetectorConstruction::~MyDetectorConstruction() {}
@@ -49,5 +51,19 @@ G4VPhysicalVolume* MyDetectorConstruction::Construct() {
     // Bottom: Plexiglass
     new G4PVPlacement(0, G4ThreeVector(0,0,-5.1*cm), logicPlexiglass, "physPlexiglass_Bottom", logicWorld, false, 1, true);
 
+    // Add some color for visualization
+    // Make Water Blue and semi-transparent (0.3 opacity)
+    G4VisAttributes* waterVis = new G4VisAttributes(G4Colour(0.0, 0.0, 1.0, 0.3)); 
+    waterVis->SetForceSolid(true); // Makes it a solid block, not a wireframe
+    logicWater->SetVisAttributes(waterVis);
+
+    // Make Plexiglass Grey and slightly more opaque
+    G4VisAttributes* plexVis = new G4VisAttributes(G4Colour(0.5, 0.5, 0.5, 0.5));
+    plexVis->SetForceSolid(true);
+    logicPlexiglass->SetVisAttributes(plexVis);
+
+    // Make World (Air) Invisible so it doesn't block the view
+    logicWorld->SetVisAttributes(G4VisAttributes::GetInvisible());
+    
     return physWorld;
 }
