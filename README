@@ -1,0 +1,2 @@
+This project simulates the passage of sea-level cosmic muons through a material stack consisting of Polyvinyl Toluene (PVT) scintillators and an Iron absorber. It uses Geant4 to track energy deposition and particle survival rates.
+

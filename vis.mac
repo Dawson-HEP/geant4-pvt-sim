@@ -1,0 +1,17 @@
+# Open the driver (Remora uses the Vtk or QtWeb drivers)
+# If Remora is installed, use: /vis/open G4Web
+# If not, use VRML as a fallback: /vis/open VRML2FILE
+/vis/open VRML2FILE
+
+# Draw the geometry
+/vis/drawVolume
+
+# Specify view angle (Top-down for your T9 beam)
+/vis/viewer/set/viewpointThetaPhi 90 0
+
+# Draw smooth trajectories (Protons = Blue, Electrons = Red)
+/vis/scene/add/trajectories smooth
+/vis/scene/endOfEventAction accumulate
+
+# Decorations
+/vis/scene/add/axes 0 0 0 10 cm

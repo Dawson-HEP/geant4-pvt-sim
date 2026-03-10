@@ -5,6 +5,8 @@
 #include "construction.hh"
 #include "action.hh"
 #include "G4AnalysisManager.hh"
+#include "G4VisExecutive.hh"
+#include "G4UIExecutive.hh"
 
 int main(int argc, char** argv) {
     // 1. Construct the default run manager
@@ -19,7 +21,31 @@ int main(int argc, char** argv) {
     // 3. Initialize G4 kernel
     runManager->Initialize(); // Commented out until we have geometry!
 
+    // Initialize Visualization
+    G4VisManager* visManager = new G4VisExecutive;
+    visManager->Initialize();
+
+    // Handle UI (For Docker, we usually run in batch mode or Web mode)
+    G4UIExecutive* ui = nullptr;
+    if (argc == 1) {
+        ui = new G4UIExecutive(argc, argv);
+    }
+
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
+
+    if (ui) {
+        // This runs if you just type ./sim
+        UImanager->ApplyCommand("/control/execute vis.mac");
+        ui->SessionStart();
+        delete ui;
+    } else {
+        // This runs if you type ./sim run.mac
+        G4String command = "/control/execute ";
+        G4String fileName = argv[1];
+        UImanager->ApplyCommand(command + fileName);
+    }
+
+    delete visManager;
 
     // Increase verbosity to see the details of each step the particle takes
     UImanager->ApplyCommand("/tracking/verbose 1");
