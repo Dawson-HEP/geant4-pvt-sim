@@ -26,6 +26,19 @@ void MySteppingAction::UserSteppingAction(const G4Step* aStep) {
     G4double stepL = aStep->GetStepLength();
     G4double trackL = track->GetTrackLength();
 
+    // Get the exit angle
+    // 1. Get the direction vector of the particle at the current step
+    G4ThreeVector momentumDir = aStep->GetPostStepPoint()->GetMomentumDirection();
+
+    // 2. Get the polar angle (theta) relative to the Z-axis (0 to pi)
+    G4double angleTheta = momentumDir.theta(); 
+
+    // 3. (Optional) Get the azimuthal angle (phi) around the Z-axis (-pi to pi)
+    G4double anglePhi = momentumDir.phi();
+
+    // Get Particle Name, 11 is PDG for electron, 2212 is PDG for proton, etc. You can find the PDG codes online.
+    G4int pdgCode = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+
     // Get Volume Name (Check for null if particle leaves the world!)
     G4String volName = "OutOfWorld";
     if (postStepPoint->GetPhysicalVolume()) {
@@ -52,6 +65,9 @@ void MySteppingAction::UserSteppingAction(const G4Step* aStep) {
     analysisManager->FillNtupleDColumn(9, trackL);
     analysisManager->FillNtupleSColumn(10, volName);
     analysisManager->FillNtupleSColumn(11, procName);
+    analysisManager->FillNtupleDColumn(12, angleTheta);
+    analysisManager->FillNtupleDColumn(13, anglePhi);
+    analysisManager->FillNtupleIColumn(14, pdgCode); 
     
     analysisManager->AddNtupleRow();
 

@@ -42,6 +42,9 @@ int main(int argc, char** argv) {
     analysisManager->CreateNtupleDColumn("TrackLeng");  // Col 9
     analysisManager->CreateNtupleSColumn("NextVolume"); // Col 10
     analysisManager->CreateNtupleSColumn("ProcName");   // Col 11
+    analysisManager->CreateNtupleDColumn("Theta");      // Col 12
+    analysisManager->CreateNtupleDColumn("Phi");        // Col 13
+    analysisManager->CreateNtupleIColumn("Particle");      // Col 14 (This is just to show you can have as many columns as you want, and they don't all have to be filled)
     analysisManager->FinishNtuple();
 
     // In sim.cc, REMOVE the Remora include and the "new G4Remora" line.
