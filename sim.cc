@@ -44,23 +44,22 @@ int main(int argc, char** argv) {
     analysisManager->CreateNtupleSColumn("ProcName");   // Col 11
     analysisManager->FinishNtuple();
 
+    // In sim.cc, REMOVE the Remora include and the "new G4Remora" line.
+    // Keep your Analysis Manager code exactly as it was.
+
     // 5. Visualization & UI
-    G4VisManager* visManager = new G4VisExecutive("Quiet"); // Quiet mode reduces terminal spam
-    visManager->Initialize();
+    G4VisManager* visManager = new G4VisExecutive("Quiet");
+    visManager->Initialize(); 
 
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
     G4UIExecutive* ui = nullptr;
 
     if (argc == 1) {
-        // Start Interactive Mode
         ui = new G4UIExecutive(argc, argv);
+        // Use a very basic vis.mac that doesn't use Remora drivers
         UImanager->ApplyCommand("/control/execute ../vis.mac");
         ui->SessionStart();
         delete ui;
-    } else {
-        // Batch Mode (e.g., ./sim run.mac)
-        G4String command = "/control/execute ";
-        UImanager->ApplyCommand(command + argv[1]);
     }
 
     // 6. Finalize Data
