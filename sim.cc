@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
     // Increase verbosity to see the details of each step the particle takes
-    UImanager->ApplyCommand("/tracking/verbose 1");
+    UImanager->ApplyCommand("/tracking/verbose 0");
 
     // Set up analysis manager for output
     auto analysisManager = G4AnalysisManager::Instance();
@@ -46,8 +46,8 @@ int main(int argc, char** argv) {
     analysisManager->CreateNtupleIColumn("PDG");        // Integer for PDG code of the particle
     analysisManager->FinishNtuple();
 
-    // 4. Start a run (shoot 10 particles)
-    runManager->BeamOn(1000);
+    // 4. Start a run (shoot n particles)
+    runManager->BeamOn(100000);
 
     // 5. Save and close the analysis file
     analysisManager->Write();

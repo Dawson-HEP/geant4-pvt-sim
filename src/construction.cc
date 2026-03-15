@@ -37,7 +37,7 @@ G4VPhysicalVolume* MyDetectorConstruction::Construct() {
 
     // 3. Shapes (Note: G4Box takes HALF-lengths)
     // Iron: 16x16x16cm -> half-lengths 8x8x8 cm
-    G4Box* solidIron = new G4Box("solidIron", 8*cm, 8*cm, 8*cm);
+    G4Box* solidIron = new G4Box("solidIron", 2.5*cm, 2.5*cm, 8*cm);
     // Ice: 20x20x20 cm -> half-lengths 10x10x10 cm
     G4Box* solidIce = new G4Box("solidIce", 10*cm, 10*cm, 10*cm);
     // PVT: 20x20x5 cm -> half-lengths 20x20x5 cm
