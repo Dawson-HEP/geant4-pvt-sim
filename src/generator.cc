@@ -24,6 +24,8 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event* anEvent) {
     fParticleGun->SetParticlePosition(G4ThreeVector(x0, y0, z0));
 
     // 2. Power Law Energy Sampling (E^-2.7)
+    // Cosmic muon spectrum at sea level: dN/dE ∝ E^-2.7 (Gaisser 2004, PDG 2024)
+    // See also: https://indico.cern.ch/event/975141/contributions/4137563/attachments/2156087/3646193/2020-Lecture-3-Interactions%20of%20Particles%20with%20Matter.pdf (2.3.2 Cosmic Ray Muon Spectrum)
     G4double Emin = 1.0*GeV;
     G4double Emax = 100.0*GeV;
     G4double alpha = 2.7;
