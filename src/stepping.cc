@@ -25,6 +25,7 @@ void MySteppingAction::UserSteppingAction(const G4Step* aStep) {
     G4double dE = aStep->GetTotalEnergyDeposit();
     G4double stepL = aStep->GetStepLength();
     G4double trackL = track->GetTrackLength();
+    G4double pdg = track->GetParticleDefinition()->GetPDGEncoding(); 
 
     // Get Volume Name (Check for null if particle leaves the world!)
     G4String volName = "OutOfWorld";
@@ -52,6 +53,7 @@ void MySteppingAction::UserSteppingAction(const G4Step* aStep) {
     analysisManager->FillNtupleDColumn(9, trackL);
     analysisManager->FillNtupleSColumn(10, volName);
     analysisManager->FillNtupleSColumn(11, procName);
+    analysisManager->FillNtupleIColumn(12, pdg);
     
     analysisManager->AddNtupleRow();
 

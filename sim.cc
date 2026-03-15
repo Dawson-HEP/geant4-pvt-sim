@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
     analysisManager->CreateNtupleDColumn("TrackLeng");
     analysisManager->CreateNtupleSColumn("NextVolume"); // String for Volume name
     analysisManager->CreateNtupleSColumn("ProcName");   // String for Process name
+    analysisManager->CreateNtupleIColumn("PDG");        // Integer for PDG code of the particle
     analysisManager->FinishNtuple();
 
     // 4. Start a run (shoot 10 particles)
