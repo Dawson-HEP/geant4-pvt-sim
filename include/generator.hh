@@ -7,6 +7,7 @@
 #include "G4ParticleTable.hh"
 #include "Randomize.hh"
 
+
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction { // This is a map of what functions are in our class
 public:
     MyPrimaryGenerator(); // This is like the python init function, but we call it the constructor
@@ -18,6 +19,7 @@ public:
 
 private:
     G4ParticleGun* fParticleGun;
+    G4ParticleDefinition* fMuon; 
 };
 
 #endif
